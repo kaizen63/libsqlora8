@@ -1,0 +1,9 @@
+
+This directory contains some build script for Gentoo Linux and Sun Solaris.
+The scripts are made for the 2.2 release, but maybe they give you 
+an idea how it works. 
+Don't ask me questions about it, they were supplied by 
+Josh Glover <jmglov[_at_]jmglov.net> and provided as is.
+
+
+Kai Poitschke (31.12.2003)

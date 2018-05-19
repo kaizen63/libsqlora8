@@ -1,0 +1,47 @@
+/* Readme-2.2.7 for Windows */
+
+Japanese explanation follows English one.
+
+-- How to build libsqlora8 under Visual C++ --
+
+1. Create a DLL project(Win32 Dynamic-Link Library). Project name is 'libsqlora8'.
+2. Execute 'sh configure'.
+3. Add sqlora.c, sqlora.h, libsqlora8-config.h and libsqlora8.def into your project.
+4. Configure your project.
+  a) Add Oracle OCI path into C/C++ tab -> Include file path.
+    For example, C:\Oracle\Ora81\OCI\include.
+  b) Add OCI library name(oci.lib) into Link tab -> Object/Library module.
+  c) And also add OCI library directory into Link tab -> Additional library path.
+    For example, C:\Oracle\Ora81\OCI\lib\msvc.
+5. Build it!
+6. Put libsqlora8.dll into system directory or PATH directory.
+
+-- Confirmed environment --
+
+* Oracle8i Enterprise Edition for Windows NT and Windows 95/98 Release 8.1.5
+* Microsoft Visual C++ 6.0 Professinal
+* Microsoft Windows 2000 Professional SP2
+* Cygwin1.3.5(to execute configure script)
+
+-- Visual C++でのlibsqlora8の作成方法 --
+
+1. DLLのプロジェクトを作成する(Win32 Dynamic-Link Library)。プロジェクト名は'libsqlora8'
+  とする。
+2. 'sh configure'を実行する。
+3. sqlora.c, sqlora.h, libsqlora8-config.h, libsqlora8.defをプロジェクトへ追加する。
+4. プロジェクトの設定を行う。
+  a) C/C++タブのカテゴリでプリプロセッサを選択し、OracleのOCIのパスをインクルードファイル
+   のパスに入力する。
+   例) C:\Oracle\Ora81\OCI\include
+  b) リンクタブのカテゴリでインプットを選択し、OCIのライブラリ名(oci.lib)をオブジェクト/
+   ライブラリモジュールに追加する。
+  c) 同じくOCIのライブラリディレクトリを追加ライブラリのパスに入力する。
+   例) C:\Oracle\Ora81\OCI\lib\msvc
+5. ビルドする。
+6. 生成されたlibsqlora8.dllをシステムディレクトリかパスの通ったディレクトリにコピーする。
+
+-- 動作確認環境 --
+
+上記"Confirmed environment"参照。
+
+EOF

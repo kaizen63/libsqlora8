@@ -1,0 +1,18 @@
+# $Id: libsqlora8.pc.in 335 2005-12-19 12:30:20Z kpoitschke $
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+glib_cflags=@GLIB_CFLAGS@
+glib_libs=@GLIB_LIBS@
+oracle_ldflags=@ORACLE_LDFLAGS@
+cflags=@CFLAGS@
+Name: libsqlora8
+Description: Oracle C API
+# Don't use @{VERSION}@ here. If something like @beta8 is appened, the test program
+# in aclibsqlora8.m4 will fail.
+Version: @PKG_VERSION@
+Libs: -L${libdir} @LD_RUNPATH_SWITCH@${libdir} -lsqlora8 ${oracle_ldflags} @LIBS@ ${glib_libs}
+Cflags: ${cflags} -I${includedir}/ -I${libdir}/libsqlora8/include ${glib_cflags}
+
+# $Id: libsqlora8.pc.in 335 2005-12-19 12:30:20Z kpoitschke $

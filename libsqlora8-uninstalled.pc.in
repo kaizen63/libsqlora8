@@ -1,0 +1,8 @@
+glib_cflags=@GLIB_CFLAGS@
+glib_libs=@GLIB_LIBS@
+
+Name: libsqlora8 Uninstalled
+Description: Oracle C API, Not Installed
+Version: @PKG_VERSION@
+Libs: ${pc_top_builddir}/${pcfiledir}/libsqlora8.la @LD_RUNPATH_SWITCH@@ORACLE_LIBDIR@ @ORACLE_SHLIBS@ ${glib_libs}
+Cflags: -I${pc_top_builddir}/${pcfiledir} ${glib_cflags}

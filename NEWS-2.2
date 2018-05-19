@@ -1,0 +1,347 @@
+What is new in libsqlora8 2.2.8
+
+-   Added missing prototype of sqlo_get_stmt to sqlora.h
+
+-   Fixed a MT bug when an invalid sql caused internally to close a cursor.
+    When the user did then the same, the cursor could have been allocated by
+    another thread. This corrupts internal data structures and leads to some
+    weired errors.
+    Many thanks to Andrea Luciano <andrea_luciano[_at_]icteam.it> who provided an
+    excellent test case.
+
+-   Included windows subdirectory where you can find a readme file and the
+    libsqlora8.def file needed by Visual C++.
+
+-   As usual, fixed some minor bugs, which in generally don't hurt, but who knows...
+
+What is new in libsqlora8 2.2.7
+
+-   Fixed error in configure script.
+
+-   Changed format of library specific error messages. The error messages
+    are prefixed by "LIBSQLORA8-<nnnnn>", where nnnnn is the error number.
+
+What is new in libsqlora8 2.2.6
+
+-   sqlo_get_ocol_dtypes returns now always the correct oracle database type,
+    regardless which interface (easy/complex) you use.
+
+-   New functions sqlo_register_int_handler and sqlo_clear_int_handler.
+    Because you are not allowed to install your own handler for SIGINT,
+    you can register one with the OCI interface via the sqlo_register_int_handler
+    function. Oracles OCI will call this function if it catches the SIGINT.
+    NOTE: DON'T TRY TO EXECUTE ANY OCI/LIBSQLORA8 FUNCTIONS IN THE SIGNAL HANDLER!!!
+    Have a look at examples/examples.c to see the usage.
+
+
+What is new in libsqlora8 2.2.5
+
+-   Write to different trace files per session.
+	There is still the trace file sqlora8.trc where information is written,
+	before a connection to a databasé is established.
+	The other trace files are named sqlora8.trc%d, where %d is the session id,
+	not the dbh! 
+    This allows better trace of threaded programs.
+
+What is new in libsqlora8 2.2.4
+
+-   Small fix in configure for Solaris 8.
+
+-   Fixed wrong includes for non-unix, non-pthread OS (I think its called windooze).
+ 
+
+What is new in libsqlora8 2.2.3
+
+-   Fixed a major bug in sqlo_reopen. The cursor was never reexecuted, so 
+    you didn't get data for the new bind variables. Most likely you got
+    an SQLO_NO_DATA status in sqlo_fetch, when you expected data.
+    The problem occurs only for queries (SELECT * FROM ...).
+
+-   Fixed some configuration problems on Solaris 2.8
+
+What is new in libsqlora8 2.2.2
+
+-   Fixed some minor bugs in the configuring of the package.
+
+-   Added example for sqlo_init and sqlo_connect to the documentation.
+
+What is new in libsqlora8 2.2.1
+
+-   No new features. Fixed only compile warnings and problems with older
+    Oracle versions (<8i).
+
+What is new in libsqlora8 2.2.0final
+
+-   New function sqlo_lob_append_buffer.
+
+-   Changed interface to sqlo_get_blocking. The result is returned in a paramater
+    instead of the return value.
+
+-   Added new configure option --with-threads=(posix|oracle)
+    You can choose now to protect the internal structure via posix mutexes, or
+    Oracle mutexes.
+
+    Note(1): Oracle threads are a wrapper to the native thread package on your system.
+             If your system does not have threads, you won't be able to use them.
+
+    Note(2): Enabling threading, does not mean that libsqlora8 uses threads internally.
+             It means that the library will protect the internal structures
+             with mutexes, so your program can use multiple threads to access Oracle.
+             DON'T FORGET TO CALL sqlo_init WITH threaded_mode = SQLO_ON to really
+             enable the locking.
+
+    Note(3): Enabling threading via --with-threads does not slow down your program,
+             until you initialize the lib with sqlo_init(SQLO_O,,)
+             If you don't need threading in your programm, don't enable it in 
+             sqlo_init.
+
+-	Added new configure option --enable-glib-alloc.
+	If you are using glib in your program, and you want libsqlora8
+	to use also g_malloc/g_free instead of malloc/free, enable it
+	with this option.
+
+What is new in libsqlora8 2.2.0beta8
+
+-   This is probably the last beta release. I have added all features I wanted
+    to have in this version. Now its time to get this thing stable.
+
+-   Added support for REF cursor and nested tables.
+
+-   Completely reworked the documentation using doxygen (http://www.doxygen.org)
+    including example code. The examples are also delivered and installed
+    in $prefix/share/doc/libsqlora8/examples.
+
+    Added new function sqlo_bind_by_pos2.
+
+    Modified parameter list of sqlo_define_by_pos2 and changed the behaviour of
+    skip_size for ind rlen and rcode.
+	Doing this, you have to put these variables inside the structure,
+	which is more convenient anyway.
+
+
+What is new in libsqlora8 2.2.0beta7
+
+-   BLOB/CLOB support. New functions added for this:
+    sqlo_alloc_lob_desc, sqlo_free_lob_desc: allocate and free a lob descriptor.
+    sqlo_lob_write_buffer: write data piecewise from a buffer into the lob.
+    sqlo_lob_read_buffer: read data from a lob into a buffer
+    sqlo_lob_write_stream: write a lob from a filepointer
+    sqlo_lob_read_stream: read a lob and write to a filepointer.
+
+    Currently no documentation is available, but the examples in testblob.c 
+    should be sufficient.
+
+What is new in libsqlora8 2.2.0beta6
+
+-   sqlo_connect did not detach from server when the login failed. This causes
+    a leaked dbh. Fixed this one.
+
+-   Internal changes like autoconf/automake/libtool updates.
+
+What is new in libsqlora8 2.2.0beta5
+
+-   Ported sqlo_server_attach, sqlo_session_begin, sqlo_session_end and sqlo_server_detach
+    from version 2.1.15
+
+-   Fixed some issues when workin in non-blocking mode
+
+-   Installs now a libsqlora.pc file in $prefix/lib/pkgconfig.
+    You can use this together with pkg-config to examine the cflags/libs etc.
+    You can get pkg-config here: http://www.freedesktop.org/software/pkgconfig/
+
+-   New configure switch --disable-trace to disable the internal trace facility.
+    Not recommended to use it, but if you need the last 1-2% performance it may
+    help. 
+
+-   New autoconf/automake stuff
+
+    The autoconf macro to configure the library is called AM_PATH_LIBSQLORA8
+
+	Usage:
+	  AM_PATH_LIBSQLORA8( min-version, action-if-found, action-if-notfound)
+
+	Example:
+	   AM_PATH_LIBSQLORA8(2.2.0, [
+	      LIBS="$LIBS $LIBSQLORA8_LIBS"
+          CFLAGS="$CFLAGS $LIBSQLORA8_CFLAGS"
+        ], 
+	    [ 
+	       echo "*** Please install libsqlora8 2.2.0 or higher"; exit 1 
+	    ])
+	
+-   Reintroduced backward compatibility to version 1 interface and version 2.1.x tree. 
+    Otherwise I will never use this version ;-)
+    You can disable the version1 interface by ./configure --disable-sqlora1
+
+What is new in libsqlora8 2.2.0beta4
+
+-   Fixed a memory leak that occured when a lot of connects/disconnects
+    are executed. 
+
+What is new in libsqlora8 2.2.0beta3
+
+-   Fixed invalid calculation of buffer size for big FLOAT datatype
+    (e.g. FLOAT(126)).
+    
+-   sqlo_open switched into non-blocking mode, caused
+    by an uninitialized variable (arghhhh).
+
+-   configure: Don't use unix.rgs anymore to determine 
+    the Oracle version. I use now svrmgrl (if available) or
+    sqlplus. unix.rgs seems not to be there in "client-only"
+    installations. 
+
+-   aclibsqlora8.m4: Total rework. The configurations works now
+    like for glib-1.2.8. 
+    Provides the macro AM_PATH_LIBSQLORA8([MINIMUM-VERSION], [ACTION-IF-FOUND, [ACTION-IF-NOT-FOUND]])
+    Use it like this in your configure.in:
+
+    AM_PATH_LIBSQLORA8($SQLORA8_MIN_VERSION, [
+        LIBS="$LIBS $LIBSQLORA8_LIBS"
+        CFLAGS="$CFLAGS $LIBSQLORA8_CFLAGS"
+     ], [ echo "*** Please install libsqlora8 $SQLORA8_MIN_VERSION or higher"; exit 1 ])
+
+    Note: If libsqlora8-config is not in your path, or not in $prefix/bin, then
+    set LIBSQORA8_CONFIG to the path pointing to that file.
+
+    Note: aclibsqlora8.m4 is installed in <prefix>/share/aclocal. You have to call
+    aclocal -I <prefix>/share/aclocal
+    to have it included into your acinclude.m4
+
+
+What is new in libsqlora8 2.2.0beta2
+
+-   Support for executing stmts in non-blocking mode. 
+
+    The new functions are:
+
+        sqlo_set_blocking(int dbh, int on);
+        sqlo_get_blocking(int dbh);
+        sqlo_break(int dbh);
+
+    To enable non-blocking call the function sqlo_set_blocking(dbh, 0).
+    The default mode of a database connection is blocking.
+
+    When in non-blocking mode, certain functions can return 
+    SQLO_STILL_EXECUTING. 
+
+    The functions are:
+        sqlo_open2
+        sqlo_reopen
+        sqlo_fetch
+        sqlo_exec
+        sqlo_execute
+
+    Watch this status and act accordingly. Remember the limitations of
+    the non-blocking mode. You cannot call another OCI/libsqlora call during an
+    execution of a non-blocking statement. See the testprogram testlora.c
+    for handling of this status. Its not really usefull how it is done
+    there, because it doesnt do some other usefull operation, but I hope
+    you get the idea.
+
+
+    Note that sqlo_open cannot be used in non-blocking mode. This function
+    is replaced by sqlo_open2. sqlo_open is deprecated and only kept for
+    backward compatiblity. When called it switches the mode temporarily
+    back to blocking mode until successfull completion.
+
+    (NOTE: In case of an error the connection stays in blocking mode)
+
+    In non-blocking mode the functions sqlo_run, sqlo_exists and sqlo_count
+    temporarily switching to blocking mode, until they finish with success.
+    (NOTE: In case of an error the connection stays in blocking mode)
+
+    You can use sqlo_break to cancel the non-blocking statement on a
+    connection. I'm not sure about the side effects on other open cursors.
+    At the moment I'm closing only the cursor that is asynchronosly opened.
+
+    All examples in testlora.c are changed to honor SQLO_STILL_EXECUTING
+    as a return value.
+   
+- 
+-   Changed interface of sqlo_init. Let you specify now the number of
+    max db connections AND the max. number of open cursors.
+
+-   Starting to move all function documentation into the header file.
+    Using javadoc style.
+    
+What is new in libsqlora8 2.2.0beta1
+-   This is the first thread safe version and is not intended for
+    use in production systems. Also the interfaces might change until
+    a final 2.2.0 production is released.
+
+    The library uses now  pthread locking to lock the 
+    internal data structures. THIS REQUIRES PTHREAD WORKING ON YOUR
+    PLATFORM.
+    To enable this feature call configure with --enable-pthreads.
+
+    Because of the necessary internal changes, the call to sqlo_init changed. 
+    sqlo_init needs to know the max. number of concurrent connections you 
+    would like to open. The number of max. parallel open cursors is set
+    to 50 * max_db. NOTE: This is the number of all open cursors across all 
+    connections!
+    If you need more parallel open cursors, call sqlo_init
+    with a higher number for max_db. The additional memory costs are low
+    (one pointer per db and one pointer per cursor).
+
+    The concept requires one connection per thread. Please be aware of
+    the fact that one thread cannot "see" the data manipulated by the
+    other until it is commited!!!
+
+    Many thanks to Carol Farlow Lerche (<cafl@msbit.com>) who enhanced the
+    library for this.
+     
+    You will find also a new function sqlo_define_by_pos2. This is an enhanced
+    version of sqlo_define_by_pos. The last parameter changed from "is_array"
+    to skip_size. It is now possible to  fetch directly into an array of
+    structures. Set the skip_size to sizeof(mystruct). You can use this
+    one also for the old style. In this case set skip_size to value_size.
+    However, for backward compatibility I kept the old function in the library.
+    See also the included testprogramm testlora.c 
+
+    
+
+What is new in libsqlora8 2.1.10
+
+-   Well, introduced this NEWS file which will contain
+    now the details of the changes.
+
+-   Added versioning support by adding new global variables:
+    sqlora8_major_version, sqlora8_minor_version,
+    sqlora8_micro_version, sqlora8_interface_age and 
+    sqlora8_binary_age 
+
+-   New function sqlo_version(char * version_str) to check
+    if the version is sufficient enough.
+    
+-   New function sqlo_get_db_handle(int sth)
+    Returns the database handle for a statement handle.
+
+-   Better check for Oracle versions. Improved autoconf macros.
+
+-   This package introduces also a new autoconf m4 file
+    acsqlora8.m4, to support developers using automake/autoconf.
+
+    Copy this code to your configure.in:
+
+dnl
+dnl
+dnl Oracle is allways checked. Optionally you can specify another
+dnl ORACLE_HOME via --with-oraclehome=<my_oracle_home>
+dnl 
+ACKP_ORACLE(8.0,, [
+    LIBS="$LIBS $ORACLE_LDFLAGS $ORACLE_SHLIBS"
+    CPPFLAGS="$CPPFLAGS $ORACLE_CPPFLAGS"
+],[ exit 1])
+
+
+dnl
+dnl Check for the required libsqlora8 is installed
+dnl
+ACKP_LIB_SQLORA8(2.1.10, $AXN_HOME, [
+    LIBS="$LIBS $SQLORA8_LDFLAGS $SQLORA8_LIBS"
+    CPPFLAGS="$CPPFLAGS $SQLORA8_CPPFLAGS"
+], [ echo "*** Please install libsqlora 2.1.10 or higher"; exit 1 ])
+
+
+

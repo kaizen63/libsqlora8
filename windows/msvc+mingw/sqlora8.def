@@ -1,0 +1,85 @@
+;libsqlora8 define file
+
+LIBRARY sqlora8
+
+EXPORTS
+  ;Initialization
+    sqlo_init
+    sqlo_version
+
+  ;Error handling functions
+    sqlo_geterror
+    sqlo_geterrcode
+
+  ;The easy interface
+    sqlo_exists
+    sqlo_count
+    sqlo_run
+    sqlo_open
+    sqlo_open2
+    sqlo_reopen
+    sqlo_fetch
+    sqlo_values
+    sqlo_value_lens
+    sqlo_ocol_names
+    sqlo_ocol_name_lens
+    sqlo_ncols
+    sqlo_command
+    sqlo_close
+    sqlo_exec
+    sqlo_isopen
+    sqlo_prows
+    sqlo_query_result
+
+  ;Functions to do login/logout to/from a database
+    sqlo_connect
+    sqlo_finish
+    sqlo_split_cstring
+    sqlo_server_attach
+    sqlo_session_begin
+    sqlo_server_detach
+    sqlo_session_end
+    sqlo_getdatabase
+
+  ;Transaction control functions
+    sqlo_commit
+    sqlo_rollback
+    sqlo_set_autocommit
+    sqlo_autocommit
+
+  ;The advanced interface.
+    sqlo_prepare
+    sqlo_bind_by_name
+    sqlo_bind_ref_cursor
+    sqlo_bind_by_pos
+    sqlo_bind_by_pos2
+    sqlo_define_by_pos
+    sqlo_define_by_pos2
+    sqlo_define_ntable
+    sqlo_execute
+
+  ;Functions to insert/select LOBs
+    sqlo_alloc_lob_desc
+    sqlo_free_lob_desc
+    sqlo_lob_write_buffer
+    sqlo_lob_append_buffer
+    sqlo_lob_write_stream
+    sqlo_lob_get_length
+    sqlo_lob_read_buffer
+    sqlo_lob_read_stream
+
+  ;Miscellaneous functions
+    sqlo_get_oci_handle
+    sqlo_get_db_handle
+    sqlo_set_blocking
+    sqlo_get_blocking
+    sqlo_break
+    sqlo_set_prefetch_rows
+    sqlo_server_version
+    sqlo_get_stmt_state
+    sqlo_get_ocol_dtype
+    sqlo_trace
+    sqlo_print
+    sqlo_register_int_handler
+    sqlo_clear_int_handler
+    sqlo_get_stmt

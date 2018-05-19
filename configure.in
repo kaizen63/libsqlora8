@@ -1,0 +1,406 @@
+dnl $Id: configure.in 337 2005-12-19 12:31:30Z kpoitschke $
+dnl configure.in
+dnl
+dnl Copyright (c) 1991-2004 Kai Poitschke (kai@poitschke.de)
+dnl  
+dnl 
+dnl This file is part of the libsqlora8 package which can be found
+dnl at http://www.poitschke.de/libsqlora8/
+dnl
+dnl
+dnl  Permission to use, copy, modify, and distribute this software for
+dnl  any purpose with or without fee is hereby granted, provided that
+dnl  the above copyright notice and this permission notice appear in all
+dnl  copies.
+dnl
+dnl  THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+dnl  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+dnl  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+dnl  IN NO EVENT SHALL THE AUTHORS AND COPYRIGHT HOLDERS AND THEIR
+dnl  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+dnl  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+dnl  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+dnl  USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+dnl  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+dnl  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+dnl  OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+dnl  SUCH DAMAGE.
+dnl
+dnl
+dnl include special sqlora8 macros
+dnl
+builtin(include, aclibsqlora8.m4)
+#require autoconf 2.52
+AC_PREREQ(2.54)
+
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT
+AC_CONFIG_SRCDIR([sqlora.c])
+AM_CONFIG_HEADER(config.h:config.h.in)
+
+AC_CANONICAL_TARGET([])
+
+LIBRARY_NAME="sqlora8"
+AC_SUBST(LIBRARY_NAME)
+
+dnl -----------------------------------
+dnl Package name and version number
+dnl -----------------------------------
+
+LIBSQLORA8_MAJOR_VERSION=2
+LIBSQLORA8_MINOR_VERSION=3
+LIBSQLORA8_MICRO_VERSION=3
+LIBSQLORA8_INTERFACE_AGE=1
+LIBSQLORA8_BINARY_AGE=3
+
+LIBSQLORA8_VERSION="$LIBSQLORA8_MAJOR_VERSION.$LIBSQLORA8_MINOR_VERSION.$LIBSQLORA8_MICRO_VERSION"
+
+AC_SUBST(LIBSQLORA8_MAJOR_VERSION)
+AC_SUBST(LIBSQLORA8_MINOR_VERSION)
+AC_SUBST(LIBSQLORA8_MICRO_VERSION)
+AC_SUBST(LIBSQLORA8_VERSION)
+AC_SUBST(LIBSQLORA8_INTERFACE_AGE)
+AC_SUBST(LIBSQLORA8_BINARY_AGE)
+dnl Package build
+BUILD=1
+AC_SUBST(BUILD)
+
+PKG_VERSION=${LIBSQLORA8_VERSION}
+AC_SUBST(PKG_VERSION)
+
+dnl for prereleases etc.
+PKG_SUFFIX=
+VERSION=${PKG_VERSION}$PKG_SUFFIX
+
+
+dnl Here are a set of rules to help you update your library version 
+dnl information (from the libtool documentation): 
+dnl
+dnl 1. Start with version information of 0:0:0 for each libtool library. 
+dnl
+dnl 2. Update the version information only immediately before a public 
+dnl    release of your software. More frequent updates are unnecessary, 
+dnl    and only guarantee that the current interface number gets larger 
+dnl    faster. 
+dnl
+dnl 3. If the library source code has changed at all since the last update,
+dnl    then increment revision (c:r:a becomes c:r+1:a).
+dnl
+dnl 4. If any interfaces have been added, removed, or changed since 
+dnl    the last update, increment current, and set revision to 0. 
+dnl
+dnl 5. If any interfaces have been added since the last public release, 
+dnl    then increment age.
+dnl
+dnl 6. If any interfaces have been removed since the last public release, 
+dnl    then set age to 0. 
+dnl
+dnl In short:
+dnl Making releases:
+dnl  MICRO_VERSION += 1;
+dnl  INTERFACE_AGE += 1;
+dnl  BINARY_AGE += 1;
+dnl
+dnl if any functions have been added, set INTERFACE_AGE to 0.
+dnl if backwards compatibility has been broken,
+dnl set BINARY_AGE and INTERFACE_AGE to 0.                          
+
+dnl libtool versioning
+
+LT_RELEASE=$LIBSQLORA8_MAJOR_VERSION.$LIBSQLORA8_MINOR_VERSION
+LT_CURRENT=`expr $LIBSQLORA8_MICRO_VERSION - $LIBSQLORA8_INTERFACE_AGE`
+LT_REVISION=$LIBSQLORA8_INTERFACE_AGE
+LT_AGE=`expr $LIBSQLORA8_BINARY_AGE - $LIBSQLORA8_INTERFACE_AGE`
+LT_OLDEST=`expr $LT_CURRENT - $LT_AGE` 
+
+AC_SUBST(LT_RELEASE)
+AC_SUBST(LT_CURRENT)
+AC_SUBST(LT_REVISION)
+AC_SUBST(LT_AGE)
+AC_SUBST(LT_OLDEST)
+
+
+
+PACKAGE=lib${LIBRARY_NAME}
+
+AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
+
+AC_DEFINE_UNQUOTED(PLATFORM, ["$target"], [The platform for which we compile])
+
+
+AC_AIX
+AC_MINIX
+ACX_HPUX
+AC_ISC_POSIX
+
+AM_PROG_LIBTOOL
+
+dnl Checks for programs.
+AC_PROG_AWK
+AC_PROG_CC([gcc egcs c89 cc])
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+
+AC_ARG_VAR([RPM], [Path to rpm program if found])
+AC_PATH_PROG([RPM], [rpm])
+AC_ARG_VAR([DOXYGEN], [Path to doxygen program if found])
+AC_PATH_PROG([DOXYGEN], [doxygen], [no])
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_HEADER_TIME
+AC_CHECK_HEADERS(unistd.h limits.h malloc.h pthread.h)
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_C_PROTOTYPES
+AC_TYPE_PID_T
+AC_TYPE_SIZE_T
+
+dnl Make sure aclocal includes from ./
+ACLOCAL="$ACLOCAL -I . "
+
+dnl Check if we have a shared aclocal directory and put it into the search path
+if test -x ${prefix}/share/aclocal 
+then
+  ACLOCAL="$ACLOCAL -I ${prefix}/share/aclocal"
+fi
+
+dnl check if the compiler supports inline
+AC_C_INLINE
+dnl ACX_C_PRAGMA(INLINE, foo, CC_PRAGMA_INLINE)
+if test x$CC = xc89; then
+  AC_DEFINE(CC_PRAGMA_INLINE, [1], [Defined if pragma inline is supported])
+fi
+
+dnl Checks for library functions.
+AC_CHECK_FUNCS(strdup usleep)
+
+ACX_LD_RUNPATH_SWITCH
+AC_SUBST(LD_RUNPATH_SWITCH)
+
+DEFAULT_SHLIB_PATH=$prefix/lib
+
+for dir in $DEFAULT_SHLIB_PATH; do
+  if test -d $dir ; then
+    if test x$LD_RUNPATH_SWITCH != x ; then
+      LDFLAGS="$LDFLAGS ${LD_RUNPATH_SWITCH}$dir"
+    fi
+  fi
+done
+
+
+dnl Before we test oracle we have to check if the user wants
+dnl to build 64bit lib.
+dnl Note: We do not check for the target platform here. Except
+dnl for target_cpu=x86_64 I don't know what will show up on
+dnl other platforms here
+dnl Enable/disable 64bit
+dnl
+AC_ARG_ENABLE(64bit,
+  AC_HELP_STRING([--enable-64bit], [Enables 64 bit mode]),
+[ ackp_64bit="yes" 
+  if test x$CC = xgcc ; then
+    CFLAGS="$CFLAGS -m64"
+  fi
+],  
+[ ackp_64bit="no" 
+  if test x$CC = xgcc ; then
+    CFLAGS="$CFLAGS -m32"
+  fi
+])
+
+
+dnl
+dnl Oracle is allways configured. Optionally you can specify another
+dnl ORACLE_HOME via --with-oracle=<my_oracle_home>
+dnl 
+AM_PATH_ORACLE(8.0,[], [
+    LDFLAGS="$LDFLAGS $ORACLE_LDFLAGS"
+    LIBS="$LIBS $ORACLE_SHLIBS"
+    CPPFLAGS="$CPPFLAGS $ORACLE_CPPFLAGS"
+],[ echo "Oops, didn't find Oracle"; exit 1
+])
+
+if test "x$LD_RUNPATH_SWITCH" != "x" -a "x$LD_SHLIB_PATH" != "x" ; then
+  LDFLAGS=" $LDFLAGS ${LD_RUNPATH_SWITCH}$LD_SHLIB_PATH"
+fi
+
+dnl
+dnl Check if oracle supports OCIEnvCreate ( version >= 8.1.6?), OCIStmtFetch2 (9i),
+dnl OCILobOpen (>= 8.1) and OCILobWriteAppend (>= 8.1)
+dnl
+AC_CHECK_FUNCS([OCIEnvCreate OCIStmtFetch2 OCILobOpen OCILobWriteAppend osnsui])
+
+dnl
+dnl Enable/disable 
+dnl
+LIBSQLORA8_THREADED=0
+LIBSQLORA8_THREADS=""
+AC_ARG_WITH(threads,
+  AC_HELP_STRING([--with-threads=(posix|oracle|windows|none)], [Use posix or oracle threads to protect internal structures. Default: none]),
+  [ 
+    if test x$withval = xposix -o x$withval = xyes; then
+
+        AC_DEFINE(ENABLE_THREADS, [1], [Defined if threads are enabled])
+        AC_DEFINE(ENABLE_PTHREADS, [1], [Defined if posix threads are enabled])
+        LIBSQLORA8_THREADS="posix"
+        LIBS="$LIBS -lpthread"
+        LIBSQLORA8_THREADED=1
+        CFLAGS="$CFLAGS -D_REENTRANT"
+
+    elif test x$withval = xoracle ; then
+
+        AC_DEFINE(ENABLE_THREADS, [1], [Defined if threads are enabled])
+        AC_DEFINE(ENABLE_ORATHREADS, [1], [Defined if Oracle threads are enabled])
+        LIBSQLORA8_THREADS="oracle"
+        LIBSQLORA8_THREADED=1
+        CFLAGS="$CFLAGS -D_REENTRANT"
+
+    elif test x$withval = xwindows ; then
+
+        AC_DEFINE(ENABLE_THREADS, [1], [Defined if threads are enabled])
+        AC_DEFINE(ENABLE_WINTHREADS, [1], [Defined if Windows threads are enabled])
+        LIBSQLORA8_THREADS="windows"
+        LIBSQLORA8_THREADED=1
+        CFLAGS="$CFLAGS -D_REENTRANT"
+
+    elif test x$withval = xnone ; then
+        LIBSLQORA_THREADED=0
+    else
+        echo "Invalid argument ($withval) for --with-threads. Use either posix or oracle"
+        exit 1
+    fi
+   ],  
+  [])
+
+AC_SUBST(LIBSQLORA8_THREADED)
+AC_SUBST(LIBSQLORA8_THREADS)
+
+
+dnl
+dnl Enable/disable purify
+dnl
+AC_ARG_ENABLE(purify,
+  AC_HELP_STRING([--enable-purify], [Enables purify.]),
+[ ACX_PURIFY(yes) ],  
+[ ACX_PURIFY(no) ])
+
+dnl
+dnl Enable/disable V1 compatibility
+dnl Default: with sqlora1 compatibility functions
+AC_ARG_ENABLE(sqlora1,
+  AC_HELP_STRING([--disable-sqlora1], [Disables functions provided by libsqlora version 1 (breaks backward compatibility).]),
+     [], [ AC_DEFINE(WANT_SQLORA1_COMPATIBILITY,[1], [Defined if sqlora1 compatibility code should be included])
+    ])
+
+dnl
+dnl Enable/disable internal trace facility
+dnl Default: The trace is enabled
+AC_ARG_ENABLE(trace,
+  AC_HELP_STRING([--disable-trace], [Disables internal trace facility.]), [], 
+    [ AC_DEFINE(LIBSQLORA8_TRACE_ENABLED, [1], [Defined if trace facility is enabled]) ])
+
+dnl
+dnl Enable/disable debugging and assertions
+dnl
+AC_ARG_ENABLE(debug,
+  AC_HELP_STRING([--enable-debug], [Enables debug code.]),
+[ ACX_DEBUG(yes)
+  CFLAGS=`echo $CFLAGS | sed 's/[+-]O[1-9]*//'`
+ ],  
+[ ACX_DEBUG(no) 
+ if test x$CC = xgcc ; then
+    CFLAGS=`echo $CFLAGS | sed -e 's/\-O./\-O3/g' -e 's/\-g//g'`
+ elif test x$CC = xc89 ; then
+   CFLAGS="$CFLAGS +O3 +Oinline"
+ fi
+])
+
+dnl
+dnl Enable glib allocators
+dnl
+AC_ARG_ENABLE(glib-alloc,
+            AC_HELP_STRING([--enable-glib-alloc], [Use glib allocators]), [
+    GLIB_MIN_VERSION="1.2.8"
+    AC_PATH_PROG(PKG_CONFIG, pkg-config, [], $prefix/bin:$PATH)
+    AC_PATH_PROG(GLIB_CONFIG, glib-config, [], $prefix/bin:$PATH)
+    use_glib2=0
+
+    if test x${PKG_CONFIG:+set} = xset ; then
+      $PKG_CONFIG --modversion glib-2.0 >/dev/null 2>&1 && use_glib2=1
+    fi
+
+    if test $use_glib2 = 1 ; then
+      AM_PATH_GLIB_2_0($GLIB_MIN_VERSION,[
+        LIBS="$LIBS $GLIB_LIBS"
+        CFLAGS="$CFLAGS $GLIB_CFLAGS"
+        AC_SUBST(GLIB_LIBS)
+        AC_SUBST(GLIB_CFLAGS)
+      ], 
+      [ 
+        echo "*** Please install glib $GLIB_MIN_VERSION or higher"; exit 1 
+      ])
+    else
+      AM_PATH_GLIB($GLIB_MIN_VERSION,[
+        LIBS="$LIBS $GLIB_LIBS"
+        CFLAGS="$CFLAGS $GLIB_CFLAGS"
+        AC_SUBST(GLIB_LIBS)
+        AC_SUBST(GLIB_CFLAGS)
+        ], 
+        [ 
+          echo "*** Please install glib $GLIB_MIN_VERSION or higher"; exit 1 
+        ])
+    fi
+    AC_DEFINE(USE_GLIB_ALLOC, [1], [Defined if g_malloc/g_free should be used])
+  ],
+  [])                                                                     
+
+if test x$CC = xgcc ; then
+  CFLAGS="$CFLAGS -W -Wall -Wmissing-prototypes"
+fi
+
+dnl Lets check the html directory for files
+if test -d ${srcdir-.}/doc/html ; then
+  htmlfiles=`(cd ${srcdir:-.}/doc/html && ls -1 *.html *.css *.png)`
+  HTMLDOCS=`echo $htmlfiles | sed 's,$, ,g'`
+  AC_SUBST(HTMLDOCS)
+
+  mydocdir="%{prefix}/share/doc/packages/$PACKAGE"
+  for htmlfile in $htmlfiles; do
+    INSTALLED_HTMLDOCS="$INSTALLED_HTMLDOCS "`echo -e "%{docdir}/$htmlfile\n"`
+  done
+#  INSTALLED_HTMLDOCS=`echo $INSTALLED_HTMLDOCS | sed 's,%,$%,g'`
+  AC_SUBST(INSTALLED_HTMLDOCS)
+fi
+
+dnl Define some common constants like BUILD_DATE and PLATFORM
+CPPFLAGS="$CPPFLAGS -DBUILD_DATE=\"\\\"`date`\\\"\" "
+
+AC_CONFIG_FILES([
+ Makefile
+ libsqlora8.spec
+ libsqlora8-config.h
+ libsqlora8-config
+ libsqlora8.pc
+ libsqlora8-uninstalled.pc
+ examples/Makefile
+ doc/Makefile
+ doc/Doxyfile
+ doc/html/Makefile
+ windows/Makefile
+ windows/msvc+mingw/Makefile
+ contrib/Makefile
+])
+
+AC_CONFIG_COMMANDS([default],
+[ 
+  chmod 444 libsqlora8.spec
+  chmod +x libsqlora8-config
+],
+[])
+
+AC_OUTPUT
+
+dnl $Id: configure.in 337 2005-12-19 12:31:30Z kpoitschke $

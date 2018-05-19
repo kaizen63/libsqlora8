@@ -1,0 +1,35 @@
+#
+# Please  modify ORA_HOME and prefix to your needs
+ORA_HOME=d:/oracle/db1
+PREFIX=c:/local
+
+ORACLE_INC=$(ORA_HOME)/OCI/include
+ORACLE_LIB=$(ORA_HOME)/OCI/lib/MSVC
+
+CFLAGS=-I. -I$(ORACLE_INC) -D__STDC__ -Dinline=
+LDFLAGS=-LIBPATH:$(ORACLE_LIB) oci.lib
+
+all: sqlora8.dll testlora.exe
+
+testlora.exe: sqlora8.dll testlora.c
+	cl testlora.c -I. -I$(ORACLE_INC) -D__STDC__ -Dinline=  sqlora8.lib $(ORACLE_LIB)/oci.lib
+ 
+
+sqlora8.dll: sqlora.o sqlora_compat.o sqlora8.def
+	link -DLL -DEF:sqlora8.def -OUT:sqlora8.dll sqlora.o sqlora_compat.o $(LDFLAGS)
+
+
+sqlora.o: sqlora.c
+	cl -c -Fosqlora.o -I. $(CFLAGS) sqlora.c
+
+
+sqlora_compat.o: sqlora_compat.c
+	cl -c -Fosqlora_compat.o $(CFLAGS) sqlora_compat.c
+
+
+clean:
+	rm -f sqlora.o sqlora_compat.o sqlora8.dll sqlora8.exp sqlora8.lib install
+
+install:
+	@echo "MinGW installation expected!"
+	cp sqlora8.dll sqlora8.lib .libs/libsqlora8.a $(PREFIX)/lib

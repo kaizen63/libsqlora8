@@ -1,0 +1,167 @@
+What is new in libsqlora8 2.2.0beta3
+
+-   Fixed invalid calculation of buffer size for big FLOAT datatype
+    (e.g. FLOAT(126)).
+    
+-   sqlo_open switched into non-blocking mode, caused
+    by an uninitialized variable (arghhhh).
+
+-   configure: Don't use unix.rgs anymore to determine 
+    the Oracle version. I use now svrmgrl (if available) or
+    sqlplus. unix.rgs seems not to be there in "client-only"
+    installations. 
+
+-   aclibsqlora8.m4: Total rework. The configurations works now
+    like for glib-1.2.8. 
+    Provides the macro AM_PATH_LIBSQLORA8([MINIMUM-VERSION], [ACTION-IF-FOUND, [ACTION-IF-NOT-FOUND]])
+    Use it like this in your configure.in:
+
+    AM_PATH_LIBSQLORA8($SQLORA8_MIN_VERSION, [
+        LIBS="$LIBS $LIBSQLORA8_LIBS"
+        CFLAGS="$CFLAGS $LIBSQLORA8_CFLAGS"
+     ], [ echo "*** Please install libsqlora8 $SQLORA8_MIN_VERSION or higher"; exit 1 ])
+
+    Note: If libsqlora8-config is not in your path, or not in $prefix/bin, then
+    set LIBSQORA8_CONFIG to the path pointing to that file.
+
+    Note: aclibsqlora8.m4 is installed in <prefix>/share/aclocal. You have to call
+    aclocal -I <prefix>/share/aclocal
+    to have it included into your acinclude.m4
+
+
+What is new in libsqlora8 2.2.0beta2
+
+-   Support for executing stmts in non-blocking mode. 
+
+    The new functions are:
+
+        sqlo_set_blocking(int dbh, int on);
+        sqlo_get_blocking(int dbh);
+        sqlo_break(int dbh);
+
+    To enable non-blocking call the function sqlo_set_blocking(dbh, 0).
+    The default mode of a database connection is blocking.
+
+    When in non-blocking mode, certain functions can return 
+    SQLO_STILL_EXECUTING. 
+
+    The functions are:
+        sqlo_open2
+        sqlo_reopen
+        sqlo_fetch
+        sqlo_exec
+        sqlo_execute
+
+    Watch this status and act accordingly. Remember the limitations of
+    the non-blocking mode. You cannot call another OCI/libsqlora call during an
+    execution of a non-blocking statement. See the testprogram testlora.c
+    for handling of this status. Its not really usefull how it is done
+    there, because it doesnt do some other usefull operation, but I hope
+    you get the idea.
+
+
+    Note that sqlo_open cannot be used in non-blocking mode. This function
+    is replaced by sqlo_open2. sqlo_open is deprecated and only kept for
+    backward compatiblity. When called it switches the mode temporarily
+    back to blocking mode until successfull completion.
+
+    (NOTE: In case of an error the connection stays in blocking mode)
+
+    In non-blocking mode the functions sqlo_run, sqlo_exists and sqlo_count
+    temporarily switching to blocking mode, until they finish with success.
+    (NOTE: In case of an error the connection stays in blocking mode)
+
+    You can use sqlo_break to cancel the non-blocking statement on a
+    connection. I'm not sure about the side effects on other open cursors.
+    At the moment I'm closing only the cursor that is asynchronosly opened.
+
+    All examples in testlora.c are changed to honor SQLO_STILL_EXECUTING
+    as a return value.
+   
+- 
+-   Changed interface of sqlo_init. Let you specify now the number of
+    max db connections AND the max. number of open cursors.
+
+-   Starting to move all function documentation into the header file.
+    Using javadoc style.
+    
+What is new in libsqlora8 2.2.0beta1
+-   This is the first thread safe version and is not intended for
+    use in production systems. Also the interfaces might change until
+    a final 2.2.0 production is released.
+
+    The library uses now  pthread locking to lock the 
+    internal data structures. THIS REQUIRES PTHREAD WORKING ON YOUR
+    PLATFORM.
+    To enable this feature call configure with --enable-pthreads.
+
+    Because of the necessary internal changes, the call to sqlo_init changed. 
+    sqlo_init needs to know the max. number of concurrent connections you 
+    would like to open. The number of max. parallel open cursors is set
+    to 50 * max_db. NOTE: This is the number of all open cursors across all 
+    connections!
+    If you need more parallel open cursors, call sqlo_init
+    with a higher number for max_db. The additional memory costs are low
+    (one pointer per db and one pointer per cursor).
+
+    The concept requires one connection per thread. Please be aware of
+    the fact that one thread cannot "see" the data manipulated by the
+    other until it is commited!!!
+
+    Many thanks to Carol Farlow Lerche (<cafl@msbit.com>) who enhanced the
+    library for this.
+     
+    You will find also a new function sqlo_define_by_pos2. This is an enhanced
+    version of sqlo_define_by_pos. The last parameter changed from "is_array"
+    to skip_size. It is now possible to  fetch directly into an array of
+    structures. Set the skip_size to sizeof(mystruct). You can use this
+    one also for the old style. In this case set skip_size to value_size.
+    However, for backward compatibility I kept the old function in the library.
+    See also the included testprogramm testlora.c 
+
+    
+
+What is new in libsqlora8 2.1.10
+
+-   Well, introduced this NEWS file which will contain
+    now the details of the changes.
+
+-   Added versioning support by adding new global variables:
+    sqlora8_major_version, sqlora8_minor_version,
+    sqlora8_micro_version, sqlora8_interface_age and 
+    sqlora8_binary_age 
+
+-   New function sqlo_version(char * version_str) to check
+    if the version is sufficient enough.
+    
+-   New function sqlo_get_db_handle(int sth)
+    Returns the database handle for a statement handle.
+
+-   Better check for Oracle versions. Improved autoconf macros.
+
+-   This package introduces also a new autoconf m4 file
+    acsqlora8.m4, to support developers using automake/autoconf.
+
+    Copy this code to your configure.in:
+
+dnl
+dnl
+dnl Oracle is allways checked. Optionally you can specify another
+dnl ORACLE_HOME via --with-oraclehome=<my_oracle_home>
+dnl 
+ACKP_ORACLE(8.0,, [
+    LIBS="$LIBS $ORACLE_LDFLAGS $ORACLE_SHLIBS"
+    CPPFLAGS="$CPPFLAGS $ORACLE_CPPFLAGS"
+],[ exit 1])
+
+
+dnl
+dnl Check for the required libsqlora8 is installed
+dnl
+ACKP_LIB_SQLORA8(2.1.10, $AXN_HOME, [
+    LIBS="$LIBS $SQLORA8_LDFLAGS $SQLORA8_LIBS"
+    CPPFLAGS="$CPPFLAGS $SQLORA8_CPPFLAGS"
+], [ echo "*** Please install libsqlora 2.1.10 or higher"; exit 1 ])
+
+
+

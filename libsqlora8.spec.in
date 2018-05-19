@@ -1,0 +1,76 @@
+#
+# Spec file for @PACKAGE@
+# Note: This is a relocatable package
+# @configure_input@
+#
+%define name @PACKAGE@
+%define ver @VERSION@
+%define rel @BUILD@
+%define prefix /usr
+
+Summary: Simple library to allow C Programms to access Oracle.
+Name: %name
+Version: %ver
+Release: %rel
+Copyright: absolutely free software (no warranty)
+Group: Libraries
+Source: ftp://www.poitschke.de/libsqlora8/%{name}-%{ver}.tar.gz
+URL: http://www.poitschke.de/libsqlora8/
+#Distribution: 
+Vendor: Kai Poitschke
+Packager: Kai Poitschke <kai[_at_]poitschke.de>
+
+#%docdir %{prefix}/share/doc/packages/%{name} %{prefix}/share/doc/packages/%{name}/html %{prefix}/share/doc/packages/%{name}/examples
+
+# This is a relocatable package
+Prefix: %prefix
+
+%description
+This library provides a much easier access to Oracle8 like OCI does, but
+of course with less functionality. This means, no support for Oracle8 objects.
+
+%prep
+# delete old build and unpack the package into the build dir.
+%setup
+
+%build
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib
+./configure --prefix=%prefix --enable-sqlora1
+make
+
+%install
+make install
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%define m4dir %{prefix}/share/aclocal
+%post 
+#
+# remove m4 macro of old distribution
+#
+if test -r %{m4dir}/acsqlora8.m4 ; then
+  echo "Rename old %{m4dir}/acsqlora8.m4 to %{m4dir}/acsqlora8.m4.rpmold"
+  mv -f %{m4dir}/acsqlora8.m4 %{m4dir}/acsqlora8.m4.rpmold
+fi
+/sbin/ldconfig
+
+%postun 
+# try to restore the saved file
+if test -r %{m4dir}/acsqlora8.m4.rpmold ; then
+  mv -f %{m4dir}/acsqlora8.m4.rpmold %{m4dir}/acsqlora8.m4
+fi
+/sbin/ldconfig
+
+%files
+%doc NEWS ChangeLog NEWS-2.2 
+@INSTALLED_HTMLDOCS@
+%{prefix}/lib/%{name}.a
+%{prefix}/lib/%{name}.la
+%{prefix}/lib/%{name}.so
+%{prefix}/lib/%{name}-@LT_RELEASE@.so.@LT_OLDEST@
+%{prefix}/lib/%{name}-@LT_RELEASE@.so.@LT_OLDEST@.@LT_AGE@.@LT_REVISION@
+%{prefix}/include/sqlora.h
+%{prefix}/share/aclocal/ac%{name}.m4
+%{prefix}/lib/%{name}/include/%{name}-config.h
+%{prefix}/bin/%{name}-config

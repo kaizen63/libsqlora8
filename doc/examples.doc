@@ -1,0 +1,84 @@
+/**
+@page examples Examples
+*/
+
+/** @example ex1.c 
+Example for using sqlo_exists 
+*/
+
+/** @example ex2.c 
+Example for using sqlo_count 
+*/
+
+/** @example ex3.c
+Example for using sqlo_run
+*/
+
+/** @example ex4.c
+Example for using sqlo_open
+*/
+
+/** @example ex5.c
+Example for using sqlo_open2
+*/
+
+/** @example ex6.c
+Example for using sqlo_reopen
+*/
+
+/** @example ex7.c
+Example for using sqlo_fetch, sqlo_values, sqlo_ocol_name_lens, sqlo_ocol_names,
+sqlo_value_lens.
+*/
+
+/** @example ex8.c
+Example for using sqlo_exec.
+*/
+
+/** @example ex9.c
+Example for calling PL/SQL blocks.
+*/
+
+/** @example ex10.c
+Example for sqlo_prepare and sqlo_bind_by_pos.
+*/
+
+/** @example ex11.c
+Example for using sqlo_define_by_pos and sqlo_execute.
+*/
+
+/** @example ex12.c
+Example for fetching data into an array of structures.
+*/
+
+/** @example ex13.c
+Example for inserting data into a blob column from an internal buffer.
+*/
+
+/** @example ex14.c
+Example for loading a file into a blob column.
+*/
+
+/** @example ex15.c
+Example for selecting blob data into a buffer
+*/
+
+/** @example ex16.c
+Example for selecting blob data into a file.
+*/
+
+/** @example ex17.c
+Example for selecting from a refcursor.
+*/
+
+/** @example ex18.c
+Example for selecting from a refcursor.
+*/
+
+/** @example ex19.c
+Example for selecting from a nested table.
+*/
+
+/** @example ex20.c
+Example for using sqlo_query_result.
+*/
